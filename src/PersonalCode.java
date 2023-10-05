@@ -7,7 +7,7 @@ public class PersonalCode {
     int uniqueNumber;
 
 
-    public PersonalCode(int genderNumber, int year, int month, int day, int orderNumber, int uniqueNumber) {
+    private PersonalCode(int genderNumber, int year, int month, int day, int orderNumber, int uniqueNumber) {
         this.genderNumber = genderNumber;
         this.year = year;
         this.month = month;

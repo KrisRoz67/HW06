@@ -14,18 +14,40 @@ public class IDCodeValidator {
     public static boolean isCorrect(String idCode) {
         if (idCode.length() == 11) {
             System.out.println("The length of your ID code is right");
-        }
+            PersonalCode personalCode = PersonalCode.getInformationFromIdCode(idCode);
+            if (isGenderNumberCorrect(personalCode.genderNumber)) {
+                if (isDayNumberCorrect(personalCode.day)) {
+                    if (isMonthNumberCorrect(personalCode.month)) {
+                        if (isBirthDateCorrect(personalCode.year, personalCode.month, personalCode.day)) {
+                            if (checkControlNumber(idCode)) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
             System.out.println("The length doesn't match the rules");
             return false;
+        }
+        System.out.println("The Id code doesn't match the rules");
+        return false;
+
     }
+
     /**
      * Проверяет корректность кода пола в ID code.
      *
      * @param genderNumber целое число, представляющее код пола
      * @return {@code true}, если код пола корректен, иначе {@code false}
      */
-    public static boolean isGenderNumberCorrect(int genderNumber){
-        return Gender.isGenderNumberCorrect(genderNumber);
+    public static boolean isGenderNumberCorrect(int genderNumber) {
+        if (Gender.isGenderNumberCorrect(genderNumber)) {
+            System.out.println("Gender number is correct");
+            return true;
+        }
+        System.out.println("Gender number is not correct");
+        return false;
     }
 
 
@@ -36,8 +58,14 @@ public class IDCodeValidator {
      * @return {@code true}, если номер дня корректен, иначе {@code false}
      */
     public static boolean isDayNumberCorrect(int dayNumber) {
-        return (dayNumber >0 && dayNumber <32);
+        if (dayNumber > 0 && dayNumber < 32) {
+            System.out.println("Day number is correct");
+            return true;
+        }
+        System.out.println("Day number is not correct");
+        return false;
     }
+
     /**
      * Проверяет корректность номера месяца рождения в ID code.
      *
@@ -45,19 +73,26 @@ public class IDCodeValidator {
      * @return {@code true}, если номер месяца корректен, иначе {@code false}
      */
     public static boolean isMonthNumberCorrect(int monthNumber) {
-        return (monthNumber > 0 && monthNumber <13);
+
+        if (monthNumber > 0 && monthNumber < 13) {
+            System.out.println("Month number is correct");
+            return true;
+        }
+        System.out.println("Month number is not correct");
+        return false;
     }
 
 
     /**
      * Проверяет корректность даты рождения в ID code.
+     *
      * @param yearNumber  целое число, представляющее год рождения (1955, 1999, 2013)
      * @param monthNumber целое число, представляющее номер месяца (1, 8)
      * @param dayNumber   целое число, представляющее номер дня (15, 31)
      * @return {@code true}, если номер дня корректен, иначе {@code false}
      */
     public static boolean isBirthDateCorrect(int yearNumber, int monthNumber, int dayNumber) {
-
+        boolean result ;
         HashMap<Integer, Integer> monthToDays = new HashMap<>();
         monthToDays.put(1, 31);
         monthToDays.put(2, 28);
@@ -71,11 +106,17 @@ public class IDCodeValidator {
         monthToDays.put(10, 31);
         monthToDays.put(11, 30);
         monthToDays.put(12, 31);
-        if (monthNumber==2 && isLeapYear(yearNumber)){
-            return (dayNumber <= monthToDays.get(monthNumber)+1);
-        }else {
-            return  (dayNumber <= monthToDays.get(monthNumber));
-            }
+        if (monthNumber == 2 && isLeapYear(yearNumber)) {
+            result = (dayNumber <= monthToDays.get(monthNumber) + 1);
+        } else {
+            result = (dayNumber <= monthToDays.get(monthNumber));
+        }
+        if (result) {
+            System.out.println("Your birth date is correct");
+        } else {
+            System.out.println("Your birth date is not correct");
+        }
+        return result;
     }
 
     /**
@@ -85,7 +126,7 @@ public class IDCodeValidator {
      * @return {@code true}, если год високосный, иначе {@code false}
      */
     public static boolean isLeapYear(int yearNumber) {
-        return (yearNumber%4==0);
+        return (yearNumber % 4 == 0);
     }
 
     /**
@@ -95,23 +136,23 @@ public class IDCodeValidator {
      * @return {@code true}, если контрольная сумма корректна, иначе {@code false}
      */
     public static boolean checkControlNumber(String idCode) {
-        int result= 0;
+        int result = 0;
         List<Integer> listOfIdCodeNumbers = new ArrayList<>();
-        for (int i =0 ; i <idCode.length() ; i++){
+        for (int i = 0; i < idCode.length(); i++) {
             String n = String.valueOf(idCode.charAt(i));
             listOfIdCodeNumbers.add(Integer.parseInt(n));
         }
-        List <Integer> x = List.of(1,2,3,4,5,6,7,8,9,1);
-        for (int i =0 ; i< listOfIdCodeNumbers.size()-1;i++){
-            result = result + (listOfIdCodeNumbers.get(i)*x.get(i));
+        List<Integer> x = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 1);
+        for (int i = 0; i < listOfIdCodeNumbers.size() - 1; i++) {
+            result = result + (listOfIdCodeNumbers.get(i) * x.get(i));
         }
-         int ostatok = result/11;
-         int ostatok2 = Math.abs(ostatok*11-result);
-
-        System.out.println("Is code"+  listOfIdCodeNumbers.get(listOfIdCodeNumbers.size()-1) );
-        System.out.println("ostatok" + ostatok2);
-
-        return (ostatok2 == listOfIdCodeNumbers.get(listOfIdCodeNumbers.size()-1) );
+        int reminder = Math.abs((result / 11) * 11 - result);
+        if (reminder == listOfIdCodeNumbers.get(listOfIdCodeNumbers.size() - 1)) {
+            System.out.println("Control number is correct");
+            return true;
+        }
+        System.out.println("Control number is not correct");
+        return false;
     }
 
     /**
@@ -123,14 +164,22 @@ public class IDCodeValidator {
      * @return Строка, в которой написан пол и дата рождения человека
      */
     public static String getInformation(String idCode) {
-        PersonalCode personalCode = PersonalCode.getInformationFromIdCode(idCode);
-        int year = personalCode.year;
-        int genderNum = personalCode.genderNumber;
-        int month = personalCode.month;
-        int day = personalCode.year;
-        int fullYear = getFullYear(genderNum,year);
-        String gender = getGender(genderNum).gender;
-        return  String.format("This is a (%s) born on (%s.%s.%s)", gender,day,month,fullYear);
+        if (isCorrect(idCode)) {
+            PersonalCode personalCode = PersonalCode.getInformationFromIdCode(idCode);
+            int year = personalCode.year;
+            int genderNum = personalCode.genderNumber;
+            int month = personalCode.month;
+            int day = personalCode.day;
+            int fullYear = getFullYear(genderNum, year);
+            String gender = getGender(genderNum).gender;
+            return String.format("This is a (%s) born on (%s.%s.%s)",
+                    gender,
+                    convertIntToString(day),
+                    convertIntToString(month),
+                    fullYear);
+        } else {
+            return "Idcode is not correct";
+        }
     }
 
     /**
@@ -152,12 +201,19 @@ public class IDCodeValidator {
      */
     public static int getFullYear(int genderNumber, int year) {
         return switch (genderNumber) {
-            case 1, 2 -> 18 + year;
-            case 3, 4 -> 19 + year;
-            case 5, 6 -> 20 + year;
+            case 1, 2 -> 1800 + year;
+            case 3, 4 -> 1900 + year;
+            case 5, 6 -> 2000 + year;
             default -> throw new RuntimeException("Unknown gender");
         };
 
     }
 
+    public static String convertIntToString(int num) {
+        String n = String.valueOf(num);
+        if (n.length() == 1) {
+            n = "0" + n;
+        }
+        return n;
+    }
 }
