@@ -4,16 +4,16 @@ public class PersonalCode {
     int month;
     int day;
     int orderNumber;
-    int uniqueNumber;
+    int controlNumber;
 
 
-    private PersonalCode(int genderNumber, int year, int month, int day, int orderNumber, int uniqueNumber) {
+    private PersonalCode(int genderNumber, int year, int month, int day, int orderNumber, int controlNumber) {
         this.genderNumber = genderNumber;
         this.year = year;
         this.month = month;
         this.day = day;
         this.orderNumber = orderNumber;
-        this.uniqueNumber = uniqueNumber;
+        this.controlNumber = controlNumber;
 
     }
 
@@ -22,8 +22,8 @@ public class PersonalCode {
         int year = Integer.parseInt(idCode.substring(1, 3));
         int month = Integer.parseInt(idCode.substring(3, 5));
         int day = Integer.parseInt(idCode.substring(5, 7));
-        int orderNumber = Integer.parseInt(idCode.substring(7, 8));
-        int uniqueNumber = Integer.parseInt(idCode.substring(8, 11));
+        int orderNumber = Integer.parseInt(idCode.substring(7,10));
+        int uniqueNumber = Integer.parseInt(idCode.substring(10,11));
         return new PersonalCode(genderNumber, year, month, day, orderNumber, uniqueNumber);
     }
 }

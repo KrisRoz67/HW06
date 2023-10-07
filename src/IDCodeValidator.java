@@ -1,3 +1,5 @@
+import java.beans.PropertyEditorSupport;
+import java.sql.PreparedStatement;
 import java.util.*;
 
 /**
@@ -12,20 +14,16 @@ public class IDCodeValidator {
      * @return {@code true}, если ID code допустим, иначе {@code false}
      */
     public static boolean isCorrect(String idCode) {
+        System.out.println(idCode);
         if (idCode.length() == 11) {
             System.out.println("The length of your ID code is right");
             PersonalCode personalCode = PersonalCode.getInformationFromIdCode(idCode);
-            if (isGenderNumberCorrect(personalCode.genderNumber)) {
-                if (isDayNumberCorrect(personalCode.day)) {
-                    if (isMonthNumberCorrect(personalCode.month)) {
-                        if (isBirthDateCorrect(personalCode.year, personalCode.month, personalCode.day)) {
-                            if (checkControlNumber(idCode)) {
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
+            if (isGenderNumberCorrect(personalCode.genderNumber)
+                    && isDayNumberCorrect(personalCode.day)
+                    && isMonthNumberCorrect(personalCode.month)
+                    && isBirthDateCorrect(personalCode.year, personalCode.month, personalCode.day)
+                    && checkControlNumber(idCode))
+                return true;
         } else {
             System.out.println("The length doesn't match the rules");
             return false;
@@ -92,8 +90,8 @@ public class IDCodeValidator {
      * @return {@code true}, если номер дня корректен, иначе {@code false}
      */
     public static boolean isBirthDateCorrect(int yearNumber, int monthNumber, int dayNumber) {
-        boolean result ;
-        HashMap<Integer, Integer> monthToDays = new HashMap<>();
+        boolean result;
+        Map<Integer, Integer> monthToDays = new HashMap<>();
         monthToDays.put(1, 31);
         monthToDays.put(2, 28);
         monthToDays.put(3, 31);
@@ -126,7 +124,9 @@ public class IDCodeValidator {
      * @return {@code true}, если год високосный, иначе {@code false}
      */
     public static boolean isLeapYear(int yearNumber) {
-        return (yearNumber % 4 == 0);
+        if (yearNumber % 4 == 0 && yearNumber % 100 != 0) {
+            return true;
+        } else return yearNumber % 400 == 0;
     }
 
     /**
@@ -142,17 +142,27 @@ public class IDCodeValidator {
             String n = String.valueOf(idCode.charAt(i));
             listOfIdCodeNumbers.add(Integer.parseInt(n));
         }
-        List<Integer> x = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 1);
-        for (int i = 0; i < listOfIdCodeNumbers.size() - 1; i++) {
-            result = result + (listOfIdCodeNumbers.get(i) * x.get(i));
+        List<Integer> x1 = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 1);
+        result = calculateSum(listOfIdCodeNumbers, x1);
+        if (result / 11 == 10) {
+            List<Integer> x2 = List.of(3, 4, 5, 6, 7, 8, 9, 1, 2, 3);
+            result = calculateSum(listOfIdCodeNumbers, x2);
+            System.out.println("Your reminder is 10 , so we use another calculation");
         }
-        int reminder = Math.abs((result / 11) * 11 - result);
+   //     int reminder = Math.abs((result / 11) * 11 - result); ----- dlja sebja
+        int reminder = result%11;
         if (reminder == listOfIdCodeNumbers.get(listOfIdCodeNumbers.size() - 1)) {
-            System.out.println("Control number is correct");
+            System.out.println(String.format("Control number is correct. The reminder is %s.That equals to your control number %s ",
+                    reminder,
+                    listOfIdCodeNumbers.get(listOfIdCodeNumbers.size() - 1)));
             return true;
+        } else {
+            System.out.println("Control number is not correct");
+            System.out.println(String.format("Reminder %s  doesn't equal to control number %s",
+                    reminder,
+                    listOfIdCodeNumbers.get(listOfIdCodeNumbers.size() - 1)));
+            return false;
         }
-        System.out.println("Control number is not correct");
-        return false;
     }
 
     /**
@@ -215,5 +225,13 @@ public class IDCodeValidator {
             n = "0" + n;
         }
         return n;
+    }
+
+    public static int calculateSum(List<Integer> listOfIdCodeNumbers, List<Integer> x) {
+        int result = 0;
+        for (int i = 0; i < listOfIdCodeNumbers.size() - 1; i++) {
+            result = result + (listOfIdCodeNumbers.get(i) * x.get(i));
+        }
+        return result;
     }
 }
