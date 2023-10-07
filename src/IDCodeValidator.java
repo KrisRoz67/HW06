@@ -1,6 +1,7 @@
-import java.beans.PropertyEditorSupport;
-import java.sql.PreparedStatement;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Класс для проверки эстонских личных кодов (ID code).
@@ -136,7 +137,7 @@ public class IDCodeValidator {
      * @return {@code true}, если контрольная сумма корректна, иначе {@code false}
      */
     public static boolean checkControlNumber(String idCode) {
-        int result = 0;
+        int result;
         List<Integer> listOfIdCodeNumbers = new ArrayList<>();
         for (int i = 0; i < idCode.length(); i++) {
             String n = String.valueOf(idCode.charAt(i));
@@ -152,15 +153,15 @@ public class IDCodeValidator {
    //     int reminder = Math.abs((result / 11) * 11 - result); ----- dlja sebja
         int reminder = result%11;
         if (reminder == listOfIdCodeNumbers.get(listOfIdCodeNumbers.size() - 1)) {
-            System.out.println(String.format("Control number is correct. The reminder is %s.That equals to your control number %s ",
+            System.out.printf("Control number is correct. The reminder is %s.That equals to your control number %s %n",
                     reminder,
-                    listOfIdCodeNumbers.get(listOfIdCodeNumbers.size() - 1)));
+                    listOfIdCodeNumbers.get(listOfIdCodeNumbers.size() - 1));
             return true;
         } else {
             System.out.println("Control number is not correct");
-            System.out.println(String.format("Reminder %s  doesn't equal to control number %s",
+            System.out.printf("Reminder %s  doesn't equal to control number %s%n",
                     reminder,
-                    listOfIdCodeNumbers.get(listOfIdCodeNumbers.size() - 1)));
+                    listOfIdCodeNumbers.get(listOfIdCodeNumbers.size() - 1));
             return false;
         }
     }
