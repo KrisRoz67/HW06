@@ -145,7 +145,7 @@ public class IDCodeValidator {
         }
         List<Integer> x1 = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 1);
         result = calculateSum(listOfIdCodeNumbers, x1);
-        if (result / 11 == 10) {
+        if (result%11 == 10) {
             List<Integer> x2 = List.of(3, 4, 5, 6, 7, 8, 9, 1, 2, 3);
             result = calculateSum(listOfIdCodeNumbers, x2);
             System.out.println("Your reminder is 10 , so we use another calculation");
